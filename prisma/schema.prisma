@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+// -------------------- USER --------------------
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  firstName String
+  lastName  String?
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  isActive  Boolean  @default(true)
+
+  @@map("users")
+}
+
+// -------------------- CATEGORY --------------------
+model Category {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  description String?
+  createdAt DateTime @default(now())
+
+  parts Part[]
+  wards Ward[]
+  areas Area[]
+  voters Voter[] 
+
+  @@map("categories")
+}
+
+// -------------------- PART --------------------
+model Part {
+  id         Int     @id @default(autoincrement())
+  name       String  @unique
+  description String?
+  categoryId Int
+  createdAt  DateTime @default(now())
+
+  category Category @relation(fields: [categoryId], references: [id])
+  wards    Ward[]
+  areas    Area[]
+  voters Voter[] 
+
+  @@map("parts")
+}
+
+// -------------------- WARD --------------------
+model Ward {
+  id         Int      @id @default(autoincrement())
+  wardNo     String  
+  description String?
+  categoryId Int
+  partId     Int
+  createdAt  DateTime @default(now())
+
+  category Category @relation(fields: [categoryId], references: [id])
+  part     Part     @relation(fields: [partId], references: [id])
+  areas    Area[]
+  voters Voter[] 
+
+  @@unique([wardNo, categoryId, partId])
+  @@map("wards")
+}
+
+// -------------------- AREA --------------------
+model Area {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  description String?
+  categoryId Int
+  partId     Int
+  wardId     Int
+  createdAt  DateTime @default(now())
+
+  category Category @relation(fields: [categoryId], references: [id])
+  part     Part     @relation(fields: [partId], references: [id])
+  ward     Ward     @relation(fields: [wardId], references: [id])
+  voters Voter[] 
+
+  @@map("areas")
+}
+
+// -------------------- VOTER --------------------
+model Voter {
+  id                Int      @id @default(autoincrement())
+
+  categoryId        Int
+  partId            Int
+  wardId            Int
+  areaId            Int
+
+  voterName         String
+  rollNo            String
+
+  gender            String
+  age               Int
+  address           String
+
+  phone             String
+
+  aadharNumber      String   @unique
+  voterId           String   @unique
+  rationCardNumber  String
+
+  rentalHouse       String
+  houseOwnerName    String?
+  houseOwnerContact String?
+
+  occupation        String
+  govtScheme        String
+  party             String
+
+  photo             String?
+
+  createdAt         DateTime @default(now())
+
+  category Category @relation(fields: [categoryId], references: [id])
+  part     Part     @relation(fields: [partId], references: [id])
+  ward     Ward     @relation(fields: [wardId], references: [id])
+  area     Area     @relation(fields: [areaId], references: [id])
+
+  @@unique([categoryId, partId, wardId, areaId, rollNo])
+  @@map("voters")
+}
