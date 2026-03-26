@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
-import { ArrowRight, ChevronLeft } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Icon from "../Icons/Icon";
 
 interface AdminSidebarProps {
@@ -93,14 +93,14 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, setIsOpen }) => {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
 
         {/* Header */}
-        <div className="relative h-20 flex items-center justify-between px-6 flex-shrink-0 border-b border-slate-800/80">
+        <div className="relative h-20 flex items-center justify-center px-6 flex-shrink-0 border-b border-slate-800/80">
           <div className="flex gap-3 items-center">
-            <button
+            {/* <button
               onClick={() => navigate("/home")}
               className="group p-2 hover:bg-white/10 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 border border-transparent hover:border-white/20"
             >
               <ChevronLeft className="text-gray-300 group-hover:text-white transition-colors" />
-            </button>
+            </button> */}
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-[var(--primary-color)] flex items-center justify-center">
                 <span className="text-white font-bold text-sm">A</span>
