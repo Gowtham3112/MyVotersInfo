@@ -137,333 +137,748 @@ const VoterSearchResult: React.FC<Props> = ({
 
   // PDF EXPORT
 
-  const handlePDFExport = () => {
+  // const handlePDFExport = () => {
+  //   try {
+  //     setLoading(true);
+
+  //     setTimeout(() => {
+  //       const doc = new jsPDF("landscape");
+  //       const pageWidth = 297;
+  //       const pageHeight = 210;
+
+  //       const cardWidth = 90;
+  //       const cardHeight = 60;
+  //       const colGap = 4;
+  //       const rowGap = 4;
+  //       const marginLeft = 7;
+  //       const marginTop = 13;
+
+  //       // ── PALETTE ──
+  //       const deepNavy: [number, number, number] = [18, 40, 90];
+  //       const softBlue: [number, number, number] = [235, 241, 255];
+  //       const cardBorder: [number, number, number] = [200, 212, 235];
+  //       const labelColor: [number, number, number] = [110, 120, 145];
+  //       const valueColor: [number, number, number] = [20, 30, 55];
+  //       const photoBoxBg: [number, number, number] = [225, 234, 255];
+  //       const dividerBg: [number, number, number] = [245, 248, 255];
+  //       const white: [number, number, number] = [255, 255, 255];
+  //       const headerBg: [number, number, number] = [18, 40, 90];
+  //       const headerText: [number, number, number] = [255, 255, 255];
+
+  //       // ── PAGE HEADER (no yellow accent line) ──
+  //       const drawPageHeader = () => {
+  //         doc.setFillColor(...headerBg);
+  //         doc.rect(0, 0, pageWidth, 11, "F");
+  //         doc.setTextColor(...headerText);
+  //         doc.setFontSize(13);
+  //         doc.setFont("helvetica", "bold");
+  //         doc.text("VOTER LIST", pageWidth / 2, 7.5, { align: "center" });
+  //         doc.setTextColor(...valueColor);
+  //       };
+
+  //       // ── PHOTO PLACEHOLDER ──
+  //       const drawPhotoPlaceholder = (
+  //         px: number,
+  //         py: number,
+  //         pw: number,
+  //         ph: number,
+  //       ) => {
+  //         doc.setFillColor(190, 205, 228);
+  //         doc.circle(px + pw / 2, py + ph * 0.35, pw * 0.23, "F");
+  //         doc.setFillColor(190, 205, 228);
+  //         doc.ellipse(px + pw / 2, py + ph * 0.75, pw * 0.33, ph * 0.24, "F");
+  //         doc.setFontSize(5);
+  //         doc.setFont("helvetica", "normal");
+  //         doc.setTextColor(150, 162, 185);
+  //         doc.text("No Photo", px + pw / 2, py + ph - 1, { align: "center" });
+  //       };
+
+  //       const truncate = (val: string, max: number) =>
+  //         val.length > max ? val.substring(0, max - 1) + "…" : val;
+
+  //       const drawField = (
+  //         label: string,
+  //         value: string,
+  //         lx: number,
+  //         ly: number,
+  //         labelW: number,
+  //         maxValueLen: number,
+  //       ) => {
+  //         doc.setFontSize(5.8);
+  //         doc.setFont("helvetica", "bold");
+  //         doc.setTextColor(...labelColor);
+  //         doc.text(label + ":", lx, ly);
+  //         doc.setFont("helvetica", "normal");
+  //         doc.setTextColor(...valueColor);
+  //         doc.text(truncate(value, maxValueLen), lx + labelW, ly);
+  //       };
+
+  //       // ── VOTER CARD ──
+  //       const drawVoterCard = (voter: any, x: number, y: number) => {
+  //         // Card background — NO drop shadow
+  //         doc.setFillColor(...white);
+  //         doc.roundedRect(x, y, cardWidth, cardHeight, 2.5, 2.5, "F");
+
+  //         // Card border only
+  //         doc.setDrawColor(...cardBorder);
+  //         doc.setLineWidth(0.4);
+  //         doc.roundedRect(x, y, cardWidth, cardHeight, 2.5, 2.5, "S");
+
+  //         // ── TOP ACCENT STRIP (thin colored line at top, no full blue header bg) ──
+  //         doc.setFillColor(...deepNavy);
+  //         doc.roundedRect(x, y, cardWidth, 2, 2.5, 2.5, "F");
+  //         doc.rect(x, y + 0.8, cardWidth, 1.2, "F"); // flatten bottom edge of strip
+
+  //         // ── VOTER NAME + ID row (plain white bg, dark text) ──
+  //         doc.setFontSize(7.5);
+  //         doc.setFont("helvetica", "bold");
+  //         doc.setTextColor(...deepNavy);
+  //         const name = voter.voterName || "Unknown Voter";
+  //         doc.text(truncate(name, 28), x + 3, y + 8.5);
+
+  //         doc.setFontSize(5.5);
+  //         doc.setFont("helvetica", "normal");
+  //         doc.setTextColor(...labelColor);
+  //         const vid = voter.voterId || "-";
+  //         doc.text("Voter ID: " + truncate(vid, 14), x + cardWidth - 3, y + 8.5, {
+  //           align: "right",
+  //         });
+
+  //         // Thin separator under name row
+  //         doc.setDrawColor(...cardBorder);
+  //         doc.setLineWidth(0.25);
+  //         doc.line(x + 2, y + 10.5, x + cardWidth - 2, y + 10.5);
+
+  //         // ── PHOTO ──
+  //         const photoX = x + 2.5;
+  //         const photoY = y + 12.5;
+  //         const photoW = 20;
+  //         const photoH = 24;
+
+  //         doc.setFillColor(...photoBoxBg);
+  //         doc.setDrawColor(...cardBorder);
+  //         doc.setLineWidth(0.3);
+  //         doc.roundedRect(photoX, photoY, photoW, photoH, 1.5, 1.5, "FD");
+
+  //         if (voter.photo) {
+  //           try {
+  //             doc.addImage(
+  //               voter.photo,
+  //               "JPEG",
+  //               photoX + 0.8,
+  //               photoY + 0.8,
+  //               photoW - 1.6,
+  //               photoH - 1.6,
+  //             );
+  //           } catch {
+  //             drawPhotoPlaceholder(photoX, photoY, photoW, photoH);
+  //           }
+  //         } else {
+  //           drawPhotoPlaceholder(photoX, photoY, photoW, photoH);
+  //         }
+
+  //         // Age + Gender pill below photo
+  //         doc.setFillColor(...softBlue);
+  //         doc.setDrawColor(...cardBorder);
+  //         doc.setLineWidth(0.2);
+  //         doc.roundedRect(photoX, photoY + photoH + 1.5, photoW, 5, 1, 1, "FD");
+  //         doc.setFontSize(5.5);
+  //         doc.setFont("helvetica", "bold");
+  //         doc.setTextColor(...deepNavy);
+  //         const agGender = `${voter.age || "-"} / ${voter.gender?.charAt(0) || "-"}`;
+  //         doc.text(agGender, photoX + photoW / 2, photoY + photoH + 4.8, {
+  //           align: "center",
+  //         });
+
+  //         // ── LEFT INFO COLUMN ──
+  //         const col1X = x + 25;
+  //         const col1LabelW = 14;
+  //         let fy = y + 15;
+  //         const lh = 6;
+
+  //         const col1Fields: [string, string][] = [
+  //           ["Category", voter.category?.name || "-"],
+  //           ["Part", voter.part?.name || "-"],
+  //           ["Ward", String(voter.ward?.wardNo || "-")],
+  //           ["Area", voter.area?.name || "-"],
+  //           ["Address", voter.address || "-"],
+  //         ];
+
+  //         col1Fields.forEach(([label, value]) => {
+  //           drawField(label, value, col1X, fy, col1LabelW, 13);
+  //           fy += lh;
+  //         });
+
+  //         // ── RIGHT INFO COLUMN ──
+  //         const col2X = x + 57;
+  //         const col2LabelW = 14;
+  //         let fy2 = y + 15;
+
+  //         const col2Fields: [string, string][] = [
+  //           ["Phone", voter.phone || "-"],
+  //           ["Aadhar", voter.aadharNumber || "-"],
+  //           ["Party", voter.party || "-"],
+  //           ["Scheme", voter.govtScheme || "-"],
+  //           ["Ration", voter.rationCardNumber || "-"],
+  //         ];
+
+  //         col2Fields.forEach(([label, value]) => {
+  //           drawField(label, value, col2X, fy2, col2LabelW, 13);
+  //           fy2 += lh;
+  //         });
+
+  //         // ── DIVIDER SECTION ──
+  //         const divY = y + cardHeight - 13;
+  //         doc.setFillColor(...dividerBg);
+  //         doc.rect(x + 0.5, divY, cardWidth - 1, 12.5, "F");
+  //         doc.setDrawColor(...cardBorder);
+  //         doc.setLineWidth(0.25);
+  //         doc.line(x + 2, divY, x + cardWidth - 2, divY);
+
+  //         // Bottom row fields
+  //         const bFields: [string, string][] = [
+  //           ["Owner", voter.houseOwnerName || "-"],
+  //           ["Contact", voter.houseOwnerContact || "-"],
+  //           ["Occup.", voter.occupation || "-"],
+  //         ];
+
+  //         const bCellW = (cardWidth - 24) / 3;
+  //         bFields.forEach(([label, value], i) => {
+  //           const bx = x + 2 + i * (bCellW + 1);
+  //           doc.setFontSize(5.5);
+  //           doc.setFont("helvetica", "bold");
+  //           doc.setTextColor(...labelColor);
+  //           doc.text(label, bx, divY + 4);
+  //           doc.setFont("helvetica", "normal");
+  //           doc.setTextColor(...valueColor);
+  //           doc.text(truncate(value, 11), bx, divY + 9);
+  //         });
+
+  //         const isRental =
+  //           voter.rentalHouse === true ||
+  //           voter.rentalHouse === "Yes" ||
+  //           voter.rentalHouse === "yes" ||
+  //           voter.rentalHouse === 1;
+
+  //         const rentalLabel = isRental ? "Rental" : "Own Home";
+
+  //         const pillBg: [number, number, number] = isRental
+  //           ? [255, 237, 200]
+  //           : [220, 245, 225];
+
+  //         const pillBorder: [number, number, number] = isRental
+  //           ? [210, 120, 20]
+  //           : [50, 155, 75];
+
+  //         const pillText: [number, number, number] = isRental
+  //           ? [150, 70, 10]
+  //           : [25, 110, 50];
+
+  //         const fontSize = 5.5;
+  //         doc.setFontSize(fontSize);
+  //         doc.setFont("helvetica", "bold");
+
+  //         // calculate text size
+  //         const textWidth = doc.getTextWidth(rentalLabel);
+
+  //         // paddings
+  //         const paddingX = 3;
+  //         const paddingY = 2;
+
+  //         // dynamic size
+  //         const pillW = textWidth + paddingX * 2;
+  //         const pillH = fontSize + paddingY * 2;
+
+  //         const pillX = x + cardWidth - pillW - 2;
+  //         const pillY = divY + 2;
+
+  //         doc.setFillColor(...pillBg);
+  //         doc.setDrawColor(...pillBorder);
+  //         doc.setLineWidth(0.35);
+
+  //         // rounded pill
+  //         // doc.roundedRect(pillX, pillY, pillW, pillH, pillH / 2, pillH / 2, "FD");
+
+  //         doc.setTextColor(...pillText);
+  //         doc.text(
+  //           rentalLabel,
+  //           pillX + pillW / 2,
+  //           pillY + pillH / 2 + fontSize * 0.35,
+  //           {
+  //             align: "center",
+  //           },
+  //         );
+  //       };
+
+  //       // ── FOOTER ──
+  //       const drawFooter = (num: number, total: number) => {
+  //         doc.setFontSize(6.5);
+  //         doc.setFont("helvetica", "normal");
+  //         doc.setTextColor(155, 160, 170);
+  //         doc.text(`Page ${num} of ${total}`, pageWidth / 2, pageHeight - 2.5, {
+  //           align: "center",
+  //         });
+  //         const now = new Date().toLocaleDateString("en-IN");
+  //         doc.text(`Generated: ${now}`, pageWidth - 5, pageHeight - 2.5, {
+  //           align: "right",
+  //         });
+  //         doc.text(`Total Voters: ${voters.length}`, 5, pageHeight - 2.5);
+  //       };
+
+  //       // ── RENDER ──
+  //       const cols = 3;
+  //       const rows = 2;
+  //       const cardsPerPage = cols * rows;
+  //       const totalPages = Math.ceil(voters.length / cardsPerPage);
+
+  //       const sorted = [...voters].sort((a: any, b: any) => {
+  //         const ra = parseInt(a.rollNo) || 0;
+  //         const rb = parseInt(b.rollNo) || 0;
+  //         return ra - rb;
+  //       });
+
+  //       let pageNum = 1;
+  //       drawPageHeader();
+  //       drawFooter(pageNum, totalPages);
+
+  //       sorted.forEach((voter: any, index: number) => {
+  //         const posOnPage = index % cardsPerPage;
+  //         const col = posOnPage % cols;
+  //         const row = Math.floor(posOnPage / cols);
+
+  //         if (index > 0 && posOnPage === 0) {
+  //           doc.addPage();
+  //           pageNum++;
+  //           drawPageHeader();
+  //           drawFooter(pageNum, totalPages);
+  //         }
+
+  //         const x = marginLeft + col * (cardWidth + colGap);
+  //         const y = marginTop + row * (cardHeight + rowGap);
+
+  //         drawVoterCard(voter, x, y);
+  //       });
+
+  //       doc.save("voter_cards.pdf");
+
+  //       showToast("PDF downloaded successfully", "success");
+  //       setLoading(false);
+  //     }, 100);
+  //   } catch (err) {
+  //     console.error(err);
+  //     showToast("Failed to export PDF", "error");
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handlePDFExport = async () => {
     try {
       setLoading(true);
 
-      setTimeout(() => {
-        const doc = new jsPDF("landscape");
-        const pageWidth = 297;
-        const pageHeight = 210;
+      // ── FETCH TAMIL FONT ──
+      const fontResponse = await fetch("/src/font/NotoSansTamil-Regular.ttf");
+      const fontBuffer = await fontResponse.arrayBuffer();
+      const fontBase64 = btoa(
+        new Uint8Array(fontBuffer).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          "",
+        ),
+      );
 
-        const cardWidth = 90;
-        const cardHeight = 60;
-        const colGap = 4;
-        const rowGap = 4;
-        const marginLeft = 7;
-        const marginTop = 13;
+      const doc = new jsPDF("landscape");
+      const pageWidth = 297;
+      const pageHeight = 210;
 
-        // ── PALETTE ──
-        const deepNavy: [number, number, number] = [18, 40, 90];
-        const softBlue: [number, number, number] = [235, 241, 255];
-        const cardBorder: [number, number, number] = [200, 212, 235];
-        const labelColor: [number, number, number] = [110, 120, 145];
-        const valueColor: [number, number, number] = [20, 30, 55];
-        const photoBoxBg: [number, number, number] = [225, 234, 255];
-        const dividerBg: [number, number, number] = [245, 248, 255];
-        const white: [number, number, number] = [255, 255, 255];
-        const headerBg: [number, number, number] = [18, 40, 90];
-        const headerText: [number, number, number] = [255, 255, 255];
+      const cardWidth = 95;
+      const cardHeight = 78;
+      const colGap = 3;
+      const rowGap = 4;
+      const marginLeft = 6;
+      const marginTop = 13;
 
-        // ── PAGE HEADER (no yellow accent line) ──
-        const drawPageHeader = () => {
-          doc.setFillColor(...headerBg);
-          doc.rect(0, 0, pageWidth, 11, "F");
-          doc.setTextColor(...headerText);
-          doc.setFontSize(13);
-          doc.setFont("helvetica", "bold");
-          doc.text("VOTER LIST", pageWidth / 2, 7.5, { align: "center" });
-          doc.setTextColor(...valueColor);
-        };
+      // ── REGISTER TAMIL FONT ──
+      doc.addFileToVFS("NotoSansTamil.ttf", fontBase64);
+      doc.addFont("NotoSansTamil.ttf", "NotoSansTamil", "normal");
 
-        // ── PHOTO PLACEHOLDER ──
-        const drawPhotoPlaceholder = (
-          px: number,
-          py: number,
-          pw: number,
-          ph: number,
-        ) => {
-          doc.setFillColor(190, 205, 228);
-          doc.circle(px + pw / 2, py + ph * 0.35, pw * 0.23, "F");
-          doc.setFillColor(190, 205, 228);
-          doc.ellipse(px + pw / 2, py + ph * 0.75, pw * 0.33, ph * 0.24, "F");
-          doc.setFontSize(5);
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor(150, 162, 185);
-          doc.text("No Photo", px + pw / 2, py + ph - 1, { align: "center" });
-        };
+      // ── PALETTE ──
+      const deepNavy: [number, number, number] = [18, 40, 90];
+      const softBlue: [number, number, number] = [235, 241, 255];
+      const cardBorder: [number, number, number] = [200, 212, 235];
+      const labelColor: [number, number, number] = [110, 120, 145];
+      const valueColor: [number, number, number] = [20, 30, 55];
+      const photoBoxBg: [number, number, number] = [225, 234, 255];
+      const dividerBg: [number, number, number] = [245, 248, 255];
+      const white: [number, number, number] = [255, 255, 255];
+      const headerBg: [number, number, number] = [18, 40, 90];
+      const headerText: [number, number, number] = [255, 255, 255];
 
-        const truncate = (val: string, max: number) =>
-          val.length > max ? val.substring(0, max - 1) + "…" : val;
+      // ── TAMIL DETECTION ──
+      const isTamil = (text: string): boolean => /[\u0B80-\u0BFF]/.test(text);
 
-        const drawField = (
-          label: string,
-          value: string,
-          lx: number,
-          ly: number,
-          labelW: number,
-          maxValueLen: number,
-        ) => {
-          doc.setFontSize(5.8);
-          doc.setFont("helvetica", "bold");
-          doc.setTextColor(...labelColor);
-          doc.text(label + ":", lx, ly);
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor(...valueColor);
-          doc.text(truncate(value, maxValueLen), lx + labelW, ly);
-        };
+      // ── FONT HELPERS ──
+      const setSmartFont = (size: number = 6) => {
+        doc.setFont("NotoSansTamil", "normal");
+        doc.setFontSize(size);
+      };
 
-        // ── VOTER CARD ──
-        const drawVoterCard = (voter: any, x: number, y: number) => {
-          // Card background — NO drop shadow
-          doc.setFillColor(...white);
-          doc.roundedRect(x, y, cardWidth, cardHeight, 2.5, 2.5, "F");
+      const setLatinFont = (
+        style: "bold" | "normal" = "normal",
+        size: number = 5.8,
+      ) => {
+        doc.setFont("helvetica", style);
+        doc.setFontSize(size);
+      };
 
-          // Card border only
-          doc.setDrawColor(...cardBorder);
-          doc.setLineWidth(0.4);
-          doc.roundedRect(x, y, cardWidth, cardHeight, 2.5, 2.5, "S");
+      // ── PAGE HEADER ──
+      const drawPageHeader = () => {
+        doc.setFillColor(...headerBg);
+        doc.rect(0, 0, pageWidth, 11, "F");
+        doc.setTextColor(...headerText);
+        setLatinFont("bold", 13);
+        doc.text("VOTER LIST", pageWidth / 2, 7.5, { align: "center" });
+        doc.setTextColor(...valueColor);
+      };
 
-          // ── TOP ACCENT STRIP (thin colored line at top, no full blue header bg) ──
-          doc.setFillColor(...deepNavy);
-          doc.roundedRect(x, y, cardWidth, 2, 2.5, 2.5, "F");
-          doc.rect(x, y + 0.8, cardWidth, 1.2, "F"); // flatten bottom edge of strip
+      // ── PHOTO PLACEHOLDER ──
+      const drawPhotoPlaceholder = (
+        px: number,
+        py: number,
+        pw: number,
+        ph: number,
+      ) => {
+        doc.setFillColor(190, 205, 228);
+        doc.circle(px + pw / 2, py + ph * 0.35, pw * 0.23, "F");
+        doc.setFillColor(190, 205, 228);
+        doc.ellipse(px + pw / 2, py + ph * 0.75, pw * 0.33, ph * 0.24, "F");
+        setLatinFont("normal", 5);
+        doc.setTextColor(150, 162, 185);
+        doc.text("No Photo", px + pw / 2, py + ph - 1, { align: "center" });
+      };
 
-          // ── VOTER NAME + ID row (plain white bg, dark text) ──
-          doc.setFontSize(7.5);
-          doc.setFont("helvetica", "bold");
-          doc.setTextColor(...deepNavy);
-          const name = voter.voterName || "Unknown Voter";
-          doc.text(truncate(name, 28), x + 3, y + 8.5);
+      // ── DRAW FIELD — set font BEFORE splitTextToSize so measurements are correct ──
+      const drawField = (
+        label: string,
+        value: string,
+        lx: number,
+        ly: number,
+        labelW: number,
+        maxW: number,
+      ): number => {
+        // Label — always English bold
+        setLatinFont("bold", 5.8);
+        doc.setTextColor(...labelColor);
+        doc.text(label + ":", lx, ly);
 
-          doc.setFontSize(5.5);
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor(...labelColor);
-          const vid = voter.voterId || "-";
-          doc.text("Voter ID: " + truncate(vid, 14), x + cardWidth - 3, y + 8.5, {
-            align: "right",
-          });
+        // ── CRITICAL: set font BEFORE splitTextToSize ──
+        const useTamil = isTamil(value);
+        if (useTamil) {
+          setSmartFont(6);
+        } else {
+          setLatinFont("normal", 5.8);
+        }
 
-          // Thin separator under name row
-          doc.setDrawColor(...cardBorder);
-          doc.setLineWidth(0.25);
-          doc.line(x + 2, y + 10.5, x + cardWidth - 2, y + 10.5);
+        // Now jsPDF measures with the correct font
+        const lines: string[] = doc.splitTextToSize(value || "-", maxW);
+        const lineHeight = useTamil ? 6.5 : 5.5;
 
-          // ── PHOTO ──
-          const photoX = x + 2.5;
-          const photoY = y + 12.5;
-          const photoW = 20;
-          const photoH = 24;
-
-          doc.setFillColor(...photoBoxBg);
-          doc.setDrawColor(...cardBorder);
-          doc.setLineWidth(0.3);
-          doc.roundedRect(photoX, photoY, photoW, photoH, 1.5, 1.5, "FD");
-
-          if (voter.photo) {
-            try {
-              doc.addImage(
-                voter.photo,
-                "JPEG",
-                photoX + 0.8,
-                photoY + 0.8,
-                photoW - 1.6,
-                photoH - 1.6,
-              );
-            } catch {
-              drawPhotoPlaceholder(photoX, photoY, photoW, photoH);
-            }
+        doc.setTextColor(...valueColor);
+        lines.forEach((line: string, i: number) => {
+          // Re-apply font per line to prevent jsPDF internal resets
+          if (useTamil) {
+            setSmartFont(6);
           } else {
+            setLatinFont("normal", 5.8);
+          }
+          doc.setTextColor(...valueColor);
+          doc.text(line, lx + labelW, ly + i * lineHeight);
+        });
+
+        return lines.length;
+      };
+
+      // ── VOTER CARD ──
+      const drawVoterCard = (voter: any, x: number, y: number) => {
+        // Card background
+        doc.setFillColor(...white);
+        doc.roundedRect(x, y, cardWidth, cardHeight, 2.5, 2.5, "F");
+
+        // Card border
+        doc.setDrawColor(...cardBorder);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(x, y, cardWidth, cardHeight, 2.5, 2.5, "S");
+
+        // ── TOP ACCENT STRIP ──
+        doc.setFillColor(...deepNavy);
+        doc.roundedRect(x, y, cardWidth, 2, 2.5, 2.5, "F");
+        doc.rect(x, y + 0.8, cardWidth, 1.2, "F");
+
+        // ── VOTER NAME ──
+        const name = voter.voterName || "Unknown Voter";
+        const useTamilName = isTamil(name);
+        if (useTamilName) {
+          setSmartFont(7);
+        } else {
+          setLatinFont("bold", 7.5);
+        }
+        doc.setTextColor(...deepNavy);
+        const nameLines: string[] = doc.splitTextToSize(name, cardWidth - 42);
+        nameLines.slice(0, 2).forEach((line: string, i: number) => {
+          if (useTamilName) {
+            setSmartFont(7);
+          } else {
+            setLatinFont("bold", 7.5);
+          }
+          doc.setTextColor(...deepNavy);
+          doc.text(line, x + 3, y + 8 + i * 5.5);
+        });
+
+        // ── VOTER ID ──
+        setLatinFont("normal", 5.5);
+        doc.setTextColor(...labelColor);
+        doc.text("ID: " + (voter.voterId || "-"), x + cardWidth - 3, y + 8.5, {
+          align: "right",
+        });
+
+        // Separator
+        doc.setDrawColor(...cardBorder);
+        doc.setLineWidth(0.25);
+        doc.line(x + 2, y + 11.5, x + cardWidth - 2, y + 11.5);
+
+        // ── PHOTO ──
+        const photoX = x + 2.5;
+        const photoY = y + 13.5;
+        const photoW = 20;
+        const photoH = 24;
+
+        doc.setFillColor(...photoBoxBg);
+        doc.setDrawColor(...cardBorder);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(photoX, photoY, photoW, photoH, 1.5, 1.5, "FD");
+
+        if (voter.photo) {
+          try {
+            doc.addImage(
+              voter.photo,
+              "JPEG",
+              photoX + 0.8,
+              photoY + 0.8,
+              photoW - 1.6,
+              photoH - 1.6,
+            );
+          } catch {
             drawPhotoPlaceholder(photoX, photoY, photoW, photoH);
           }
+        } else {
+          drawPhotoPlaceholder(photoX, photoY, photoW, photoH);
+        }
 
-          // Age + Gender pill below photo
-          doc.setFillColor(...softBlue);
-          doc.setDrawColor(...cardBorder);
-          doc.setLineWidth(0.2);
-          doc.roundedRect(photoX, photoY + photoH + 1.5, photoW, 5, 1, 1, "FD");
-          doc.setFontSize(5.5);
-          doc.setFont("helvetica", "bold");
-          doc.setTextColor(...deepNavy);
-          const agGender = `${voter.age || "-"} / ${voter.gender?.charAt(0) || "-"}`;
-          doc.text(agGender, photoX + photoW / 2, photoY + photoH + 4.8, {
-            align: "center",
-          });
+        // Age + Gender pill
+        doc.setFillColor(...softBlue);
+        doc.setDrawColor(...cardBorder);
+        doc.setLineWidth(0.2);
+        doc.roundedRect(photoX, photoY + photoH + 1.5, photoW, 5, 1, 1, "FD");
+        setLatinFont("bold", 5.5);
+        doc.setTextColor(...deepNavy);
+        const agGender = `${voter.age || "-"} / ${voter.gender?.charAt(0) || "-"}`;
+        doc.text(agGender, photoX + photoW / 2, photoY + photoH + 4.8, {
+          align: "center",
+        });
 
-          // ── LEFT INFO COLUMN ──
-          const col1X = x + 25;
-          const col1LabelW = 14;
-          let fy = y + 15;
-          const lh = 6;
+        // ── LEFT INFO COLUMN ──
+        const col1X = x + 26;
+        const col1LabelW = 15;
+        const col1ValueW = 26;
+        let fy = y + 15.5;
+        const baseLineH = 6.2;
 
-          const col1Fields: [string, string][] = [
-            ["Category", voter.category?.name || "-"],
-            ["Part", voter.part?.name || "-"],
-            ["Ward", String(voter.ward?.wardNo || "-")],
-            ["Area", voter.area?.name || "-"],
-            ["Address", voter.address || "-"],
-          ];
+        const col1Fields: [string, string][] = [
+          ["Category", voter.category?.name || "-"],
+          ["Part", voter.part?.name || "-"],
+          ["Ward", String(voter.ward?.wardNo || "-")],
+          ["Area", voter.area?.name || "-"],
+          ["Address", voter.address || "-"],
+        ];
 
-          col1Fields.forEach(([label, value]) => {
-            drawField(label, value, col1X, fy, col1LabelW, 13);
-            fy += lh;
-          });
-
-          // ── RIGHT INFO COLUMN ──
-          const col2X = x + 57;
-          const col2LabelW = 14;
-          let fy2 = y + 15;
-
-          const col2Fields: [string, string][] = [
-            ["Phone", voter.phone || "-"],
-            ["Aadhar", voter.aadharNumber || "-"],
-            ["Party", voter.party || "-"],
-            ["Scheme", voter.govtScheme || "-"],
-            ["Ration", voter.rationCardNumber || "-"],
-          ];
-
-          col2Fields.forEach(([label, value]) => {
-            drawField(label, value, col2X, fy2, col2LabelW, 13);
-            fy2 += lh;
-          });
-
-          // ── DIVIDER SECTION ──
-          const divY = y + cardHeight - 13;
-          doc.setFillColor(...dividerBg);
-          doc.rect(x + 0.5, divY, cardWidth - 1, 12.5, "F");
-          doc.setDrawColor(...cardBorder);
-          doc.setLineWidth(0.25);
-          doc.line(x + 2, divY, x + cardWidth - 2, divY);
-
-          // Bottom row fields
-          const bFields: [string, string][] = [
-            ["Owner", voter.houseOwnerName || "-"],
-            ["Contact", voter.houseOwnerContact || "-"],
-            ["Occup.", voter.occupation || "-"],
-          ];
-
-          const bCellW = (cardWidth - 24) / 3;
-          bFields.forEach(([label, value], i) => {
-            const bx = x + 2 + i * (bCellW + 1);
-            doc.setFontSize(5.5);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(...labelColor);
-            doc.text(label, bx, divY + 4);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(...valueColor);
-            doc.text(truncate(value, 11), bx, divY + 9);
-          });
-
-          const isRental =
-            voter.rentalHouse === true ||
-            voter.rentalHouse === "Yes" ||
-            voter.rentalHouse === "yes" ||
-            voter.rentalHouse === 1;
-
-          const rentalLabel = isRental ? "Rental" : "Own Home";
-
-          const pillBg: [number, number, number] = isRental
-            ? [255, 237, 200]
-            : [220, 245, 225];
-
-          const pillBorder: [number, number, number] = isRental
-            ? [210, 120, 20]
-            : [50, 155, 75];
-
-          const pillText: [number, number, number] = isRental
-            ? [150, 70, 10]
-            : [25, 110, 50];
-
-          const fontSize = 5.5;
-          doc.setFontSize(fontSize);
-          doc.setFont("helvetica", "bold");
-
-          // calculate text size
-          const textWidth = doc.getTextWidth(rentalLabel);
-
-          // paddings
-          const paddingX = 3;
-          const paddingY = 2;
-
-          // dynamic size
-          const pillW = textWidth + paddingX * 2;
-          const pillH = fontSize + paddingY * 2;
-
-          const pillX = x + cardWidth - pillW - 2;
-          const pillY = divY + 2;
-
-          doc.setFillColor(...pillBg);
-          doc.setDrawColor(...pillBorder);
-          doc.setLineWidth(0.35);
-
-          // rounded pill
-          // doc.roundedRect(pillX, pillY, pillW, pillH, pillH / 2, pillH / 2, "FD");
-
-          doc.setTextColor(...pillText);
-          doc.text(
-            rentalLabel,
-            pillX + pillW / 2,
-            pillY + pillH / 2 + fontSize * 0.35,
-            {
-              align: "center",
-            },
+        col1Fields.forEach(([label, value]) => {
+          const lineCount = drawField(
+            label,
+            value,
+            col1X,
+            fy,
+            col1LabelW,
+            col1ValueW,
           );
-        };
-
-        // ── FOOTER ──
-        const drawFooter = (num: number, total: number) => {
-          doc.setFontSize(6.5);
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor(155, 160, 170);
-          doc.text(`Page ${num} of ${total}`, pageWidth / 2, pageHeight - 2.5, {
-            align: "center",
-          });
-          const now = new Date().toLocaleDateString("en-IN");
-          doc.text(`Generated: ${now}`, pageWidth - 5, pageHeight - 2.5, {
-            align: "right",
-          });
-          doc.text(`Total Voters: ${voters.length}`, 5, pageHeight - 2.5);
-        };
-
-        // ── RENDER ──
-        const cols = 3;
-        const rows = 2;
-        const cardsPerPage = cols * rows;
-        const totalPages = Math.ceil(voters.length / cardsPerPage);
-
-        const sorted = [...voters].sort((a: any, b: any) => {
-          const ra = parseInt(a.rollNo) || 0;
-          const rb = parseInt(b.rollNo) || 0;
-          return ra - rb;
+          const lineH = isTamil(value) ? 6.5 : 5.5;
+          fy += baseLineH + Math.max(0, lineCount - 1) * lineH;
         });
 
-        let pageNum = 1;
-        drawPageHeader();
-        drawFooter(pageNum, totalPages);
+        // ── RIGHT INFO COLUMN ──
+        const col2X = x + 60;
+        const col2LabelW = 13;
+        const col2ValueW = 22;
+        let fy2 = y + 15.5;
 
-        sorted.forEach((voter: any, index: number) => {
-          const posOnPage = index % cardsPerPage;
-          const col = posOnPage % cols;
-          const row = Math.floor(posOnPage / cols);
+        const col2Fields: [string, string][] = [
+          ["Phone", voter.phone || "-"],
+          ["Aadhar", voter.aadharNumber || "-"],
+          ["Party", voter.party || "-"],
+          ["Scheme", voter.govtScheme || "-"],
+          ["Ration", voter.rationCardNumber || "-"],
+        ];
 
-          if (index > 0 && posOnPage === 0) {
-            doc.addPage();
-            pageNum++;
-            drawPageHeader();
-            drawFooter(pageNum, totalPages);
+        col2Fields.forEach(([label, value]) => {
+          const lineCount = drawField(
+            label,
+            value,
+            col2X,
+            fy2,
+            col2LabelW,
+            col2ValueW,
+          );
+          const lineH = isTamil(value) ? 6.5 : 5.5;
+          fy2 += baseLineH + Math.max(0, lineCount - 1) * lineH;
+        });
+
+        // ── DIVIDER SECTION ──
+        const divY = y + cardHeight - 14;
+        doc.setFillColor(...dividerBg);
+        doc.rect(x + 0.5, divY, cardWidth - 1, 13.5, "F");
+        doc.setDrawColor(...cardBorder);
+        doc.setLineWidth(0.25);
+        doc.line(x + 2, divY, x + cardWidth - 2, divY);
+
+        // Bottom row fields
+        const bFields: [string, string][] = [
+          ["Owner", voter.houseOwnerName || "-"],
+          ["Contact", voter.houseOwnerContact || "-"],
+          ["Occup.", voter.occupation || "-"],
+        ];
+
+        const bCellW = (cardWidth - 26) / 3;
+        bFields.forEach(([label, value], i) => {
+          const bx = x + 2 + i * (bCellW + 1);
+
+          setLatinFont("bold", 5.5);
+          doc.setTextColor(...labelColor);
+          doc.text(label, bx, divY + 4);
+
+          // ── Set font BEFORE splitTextToSize for bottom row too ──
+          const useTamil = isTamil(value);
+          if (useTamil) {
+            setSmartFont(5.5);
+          } else {
+            setLatinFont("normal", 5.5);
           }
+          doc.setTextColor(...valueColor);
 
-          const x = marginLeft + col * (cardWidth + colGap);
-          const y = marginTop + row * (cardHeight + rowGap);
-
-          drawVoterCard(voter, x, y);
+          const bLines: string[] = doc.splitTextToSize(
+            value || "-",
+            bCellW - 1,
+          );
+          bLines.slice(0, 2).forEach((line: string, li: number) => {
+            if (useTamil) {
+              setSmartFont(5.5);
+            } else {
+              setLatinFont("normal", 5.5);
+            }
+            doc.setTextColor(...valueColor);
+            doc.text(line, bx, divY + 8.5 + li * 5);
+          });
         });
 
-        doc.save("voter_cards.pdf");
+        // ── RENTAL PILL ──
+        const isRental =
+          voter.rentalHouse === true ||
+          voter.rentalHouse === "Yes" ||
+          voter.rentalHouse === "yes" ||
+          voter.rentalHouse === 1;
 
-        showToast("PDF downloaded successfully", "success");
-        setLoading(false);
-      }, 100);
+        const rentalLabel = isRental ? "Rental" : "Own Home";
+        const pillBg: [number, number, number] = isRental
+          ? [255, 237, 200]
+          : [220, 245, 225];
+        const pillBorder: [number, number, number] = isRental
+          ? [210, 120, 20]
+          : [50, 155, 75];
+        const pillText: [number, number, number] = isRental
+          ? [150, 70, 10]
+          : [25, 110, 50];
+
+        setLatinFont("bold", 5.5);
+        const textWidth = doc.getTextWidth(rentalLabel);
+        const paddingX = 3;
+        const paddingY = 2;
+        const pillW = textWidth + paddingX * 2;
+        const pillH = 5.5 + paddingY * 2;
+        const pillX = x + cardWidth - pillW - 2;
+        const pillY = divY + 1.5;
+
+        doc.setFillColor(...pillBg);
+        doc.setDrawColor(...pillBorder);
+        doc.setLineWidth(0.35);
+        doc.roundedRect(pillX, pillY, pillW, pillH, 1, 1, "FD");
+        doc.setTextColor(...pillText);
+        doc.text(
+          rentalLabel,
+          pillX + pillW / 2,
+          pillY + pillH / 2 + 5.5 * 0.35,
+          {
+            align: "center",
+          },
+        );
+      };
+
+      // ── FOOTER ──
+      const drawFooter = (num: number, total: number) => {
+        setLatinFont("normal", 6.5);
+        doc.setTextColor(155, 160, 170);
+        doc.text(`Page ${num} of ${total}`, pageWidth / 2, pageHeight - 2.5, {
+          align: "center",
+        });
+        const now = new Date().toLocaleDateString("en-IN");
+        doc.text(`Generated: ${now}`, pageWidth - 5, pageHeight - 2.5, {
+          align: "right",
+        });
+        doc.text(`Total Voters: ${voters.length}`, 5, pageHeight - 2.5);
+      };
+
+      // ── RENDER ──
+      const cols = 3;
+      const rows = 2;
+      const cardsPerPage = cols * rows;
+      const totalPages = Math.ceil(voters.length / cardsPerPage);
+
+      const sorted = [...voters].sort((a: any, b: any) => {
+        const ra = parseInt(a.rollNo) || 0;
+        const rb = parseInt(b.rollNo) || 0;
+        return ra - rb;
+      });
+
+      let pageNum = 1;
+      drawPageHeader();
+      drawFooter(pageNum, totalPages);
+
+      sorted.forEach((voter: any, index: number) => {
+        const posOnPage = index % cardsPerPage;
+        const col = posOnPage % cols;
+        const row = Math.floor(posOnPage / cols);
+
+        if (index > 0 && posOnPage === 0) {
+          doc.addPage();
+          pageNum++;
+          drawPageHeader();
+          drawFooter(pageNum, totalPages);
+        }
+
+        const x = marginLeft + col * (cardWidth + colGap);
+        const y = marginTop + row * (cardHeight + rowGap);
+
+        drawVoterCard(voter, x, y);
+      });
+
+      doc.save("voter_cards.pdf");
+      showToast("PDF downloaded successfully", "success");
+      setLoading(false);
     } catch (err) {
       console.error(err);
       showToast("Failed to export PDF", "error");
