@@ -345,10 +345,14 @@ const exportVotersExcel = async (req, res) => {
       { header: "Photo (புகைப்படம்)", key: "photo" },
       { header: "Name (பெயர்)", key: "voterName" },
       { header: "Roll No (வரிசை எண்)", key: "rollNo" },
-      { header: "Phone (தொலைபேசி)", key: "phone" },
       { header: "Gender (பாலினம்)", key: "gender" },
       { header: "Age (வயது)", key: "age" },
+      { header: "Category (வகை)", key: "category" },
+      { header: "Part No (பாகம் எண்)", key: "part" },
+      { header: "Ward No (வார்டு எண்)", key: "ward" },
+      { header: "Area (பகுதி)", key: "area" },
       { header: "Address (முகவரி)", key: "address" },
+      { header: "Phone (தொலைபேசி)", key: "phone" },
       { header: "Aadhar Number (ஆதார் எண்)", key: "aadharNumber" },
       { header: "Voter ID (வாக்காளர் அட்டை)", key: "voterId" },
       { header: "Ration Card (ரேஷன் அட்டை)", key: "rationCardNumber" },
@@ -361,10 +365,6 @@ const exportVotersExcel = async (req, res) => {
       { header: "Occupation (வேலை)", key: "occupation" },
       { header: "Govt Scheme (அரசு திட்டம்)", key: "govtScheme" },
       { header: "Party (கட்சி)", key: "party" },
-      { header: "Category (வகை)", key: "category" },
-      { header: "Part No (பாகம் எண்)", key: "part" },
-      { header: "Ward No (வார்டு எண்)", key: "ward" },
-      { header: "Area (பகுதி)", key: "area" },
     ];
 
     // Auto column width based on header
@@ -401,10 +401,14 @@ const exportVotersExcel = async (req, res) => {
       const row = sheet.addRow({
         voterName: v.voterName || "--",
         rollNo: v.rollNo || "--",
-        phone: v.phone || "--",
         gender: v.gender || "--",
         age: v.age || "--",
+        category: v.category?.name || "--",
+        part: v.part?.name || "--",
+        ward: v.ward?.wardNo || "--",
+        area: v.area?.name || "--",
         address: v.address || "--",
+        phone: v.phone || "--",
         aadharNumber: v.aadharNumber || "--",
         voterId: v.voterId || "--",
         rationCardNumber: v.rationCardNumber || "--",
@@ -414,10 +418,6 @@ const exportVotersExcel = async (req, res) => {
         occupation: v.occupation || "--",
         govtScheme: v.govtScheme || "--",
         party: v.party || "--",
-        category: v.category?.name || "--",
-        part: v.part?.name || "--",
-        ward: v.ward?.wardNo || "--",
-        area: v.area?.name || "--",
       });
 
       row.height = 65;
@@ -525,6 +525,7 @@ const exportVoterListPDF = async (req, res) => {
         .text(`Part: ${v.part?.name || "-"}`)
         .text(`Ward: ${v.ward?.wardNo || "-"}`)
         .text(`Area: ${v.area?.name || "-"}`)
+        .text(`Address: ${v.address || "-"}`)
         .text(`Phone: ${v.phone || "-"}`)
         .text(`Aadhar: ${v.aadharNumber || "-"}`)
         .text(`Voter ID: ${v.voterId || "-"}`)
@@ -534,8 +535,7 @@ const exportVoterListPDF = async (req, res) => {
         .text(`Owner Contact: ${v.houseOwnerContact || "-"}`)
         .text(`Occupation: ${v.occupation || "-"}`)
         .text(`Party: ${v.party || "-"}`)
-        .text(`Govt Scheme: ${v.govtScheme || "-"}`)
-        .text(`Address: ${v.address || "-"}`);
+        .text(`Govt Scheme: ${v.govtScheme || "-"}`);
 
       doc.moveDown();
 
