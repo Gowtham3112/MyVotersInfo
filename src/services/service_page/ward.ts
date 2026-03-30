@@ -15,13 +15,15 @@ export const getAllWardsAPI = async (): Promise<Ward[]> => {
 
 // ---------------- GET WARDS (PAGINATION + SEARCH) ----------------
 export const getWardsAPI = async (
-  page: number = 1,
-  limit: number = 10,
-  search: string = "",
+  page = 1,
+  limit = 10,
+  search = "",
+  sortBy = "createdAt",
+  order = "desc"
 ): Promise<WardPaginationResponse> => {
-  return await apiCall<WardPaginationResponse>(
+  return await apiCall(
     "get",
-    `/wards?page=${page}&limit=${limit}&search=${search}`,
+    `/wards?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&order=${order}`
   );
 };
 

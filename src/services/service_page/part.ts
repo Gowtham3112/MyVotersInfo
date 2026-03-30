@@ -20,10 +20,12 @@ export const getPartsAPI = async (
   page: number = 1,
   limit: number = 10,
   search: string = "",
+  sortBy: string = "createdAt",
+  order: string = "desc"
 ): Promise<PartPaginationResponse> => {
   return await apiCall<PartPaginationResponse>(
     "get",
-    `/parts?page=${page}&limit=${limit}&search=${search}`,
+    `/parts?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&order=${order}`
   );
 };
 

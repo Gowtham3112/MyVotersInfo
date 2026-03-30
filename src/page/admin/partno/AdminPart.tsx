@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { Pencil, Plus, Trash2, Search, Cog, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Pencil,
+  Plus,
+  Trash2,
+  Search,
+  Cog,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 import AdminPartModel from "./AdminPartModel";
 import DeleteModal from "../../../component/common/DeleteModel";
@@ -32,12 +40,15 @@ const AdminPart = () => {
 
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+
   // ---------------- FETCH PARTS ----------------
   const fetchParts = async () => {
     try {
       setLoading(true);
 
-      const res = await getPartsAPI(page, limit, searchTerm);
+      const res = await getPartsAPI(page, limit, searchTerm, sortBy, order);
 
       setParts(res.data);
       setTotalPages(res.pagination.totalPages);
@@ -51,7 +62,20 @@ const AdminPart = () => {
 
   useEffect(() => {
     fetchParts();
-  }, [page, searchTerm, limit]);
+  }, [page, searchTerm, limit, sortBy, order]);
+
+  const handleSortByPartNo = () => {
+    setPage(1); // reset page
+
+    if (sortBy === "name") {
+      // toggle order
+      setOrder(order === "asc" ? "desc" : "asc");
+    } else {
+      // first time click
+      setSortBy("name");
+      setOrder("asc");
+    }
+  };
 
   // ---------------- DELETE ----------------
   const handleDelete = async () => {
@@ -105,8 +129,8 @@ const AdminPart = () => {
             <div className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm text-slate-600 shadow-sm">
               <Cog size={13} className="text-[var(--primary-color)]" />
               <span>
-                <strong className="text-slate-800">{totalRecords}</strong>{" "}
-                total parts (பாகம் எண் எண்ணிகை)
+                <strong className="text-slate-800">{totalRecords}</strong> total
+                parts (பாகம் எண் எண்ணிகை)
               </span>
             </div>
             {searchTerm && (
@@ -163,7 +187,18 @@ const AdminPart = () => {
                       Category (உள்ளாட்சி அமைப்பு)
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80">
-                      Part No (பாகம் எண்)
+                      <div
+                        onClick={handleSortByPartNo}
+                        className="flex items-center gap-1 cursor-pointer select-none"
+                      >
+                        Part No (பாகம் எண்)
+                        {/* ICON */}
+                        {sortBy === "name"
+                          ? order === "asc"
+                            ? "🔼"
+                            : "🔽"
+                          : " ⇅"}
+                      </div>
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80">
                       Description (விளக்கம்)
@@ -214,7 +249,9 @@ const AdminPart = () => {
                             {part.category.name}
                           </span>
                         ) : (
-                          <span className="text-slate-300 italic text-sm">—</span>
+                          <span className="text-slate-300 italic text-sm">
+                            —
+                          </span>
                         )}
                       </td>
 
@@ -228,7 +265,9 @@ const AdminPart = () => {
 
                       <td className="px-6 py-4 text-sm text-slate-500">
                         {part.description || (
-                          <span className="text-slate-300 italic">No description</span>
+                          <span className="text-slate-300 italic">
+                            No description
+                          </span>
                         )}
                       </td>
 
@@ -269,7 +308,8 @@ const AdminPart = () => {
               {/* Total + Rows per page */}
               <div className="flex items-center gap-4">
                 <p className="text-xs text-slate-500">
-                  <strong className="text-slate-700">{totalRecords}</strong> total records
+                  <strong className="text-slate-700">{totalRecords}</strong>{" "}
+                  total records
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-500">Rows:</span>

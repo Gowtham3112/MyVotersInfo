@@ -46,12 +46,24 @@ const AdminVoter = () => {
 
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
+  const [sortBy, setSortBy] = useState<string>("");
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+
   // ---------------- FETCH VOTERS ----------------
   const fetchVoters = async () => {
     try {
       setLoading(true);
 
-      const res = await getVotersPaginatedAPI(page, limit, searchTerm);
+      const sortPart = sortBy === "partName" ? order : "";
+      const sortWard = sortBy === "wardNo" ? order : "";
+
+      const res = await getVotersPaginatedAPI(
+        page,
+        limit,
+        searchTerm,
+        sortPart,
+        sortWard,
+      );
 
       setVoters(res.data);
       setTotalPages(res.pagination.totalPages);
@@ -65,7 +77,22 @@ const AdminVoter = () => {
 
   useEffect(() => {
     fetchVoters();
-  }, [page, searchTerm, limit]);
+  }, [page, limit, searchTerm, sortBy, order]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [sortBy, order]);
+
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      // toggle asc ↔ desc
+      setOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      // new column → default asc
+      setSortBy(field);
+      setOrder("asc");
+    }
+  };
 
   // ---------------- DELETE ----------------
   const handleDelete = async () => {
@@ -86,7 +113,16 @@ const AdminVoter = () => {
     try {
       setLoading(true);
 
-      const blob = await exportVotersExcelAPI(page, limit, searchTerm);
+      const sortPart = sortBy === "partName" ? order : "";
+      const sortWard = sortBy === "wardNo" ? order : "";
+
+      const blob = await exportVotersExcelAPI(
+        page,
+        limit,
+        searchTerm,
+        sortPart,
+        sortWard,
+      );
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -598,10 +634,30 @@ const AdminVoter = () => {
                       Category (உள்ளாட்சி அமைப்பு)
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80">
-                      Part No (பாகம் எண்)
+                      <div
+                        onClick={() => handleSort("partName")}
+                        className="flex items-center gap-1 cursor-pointer"
+                      >
+                        Part No (பாகம் எண்)
+                        {sortBy === "partName"
+                          ? order === "asc"
+                            ? "🔼"
+                            : "🔽"
+                          : " ⇅"}
+                      </div>
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80">
-                      Ward No (வார்டு எண்)
+                      <div
+                        onClick={() => handleSort("wardNo")}
+                        className="flex items-center gap-1 cursor-pointer"
+                      >
+                        Ward No (வார்டு எண்)
+                        {sortBy === "wardNo"
+                          ? order === "asc"
+                            ? "🔼"
+                            : "🔽"
+                          : " ⇅"}
+                      </div>
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80">
                       Area (நகர்)

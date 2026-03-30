@@ -15,13 +15,15 @@ export const getAllAreasAPI = async (): Promise<Area[]> => {
 
 // ---------------- GET AREAS (PAGINATION + SEARCH) ----------------
 export const getAreasPaginatedAPI = async (
-  page: number = 1,
-  limit: number = 10,
-  search: string = "",
+  page = 1,
+  limit = 10,
+  search = "",
+  sortBy = "createdAt",
+  order = "desc"
 ): Promise<AreaPaginationResponse> => {
-  return await apiCall<AreaPaginationResponse>(
+  return await apiCall(
     "get",
-    `/areas/paginated?page=${page}&limit=${limit}&search=${search}`,
+    `/areas/paginated?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&order=${order}`
   );
 };
 

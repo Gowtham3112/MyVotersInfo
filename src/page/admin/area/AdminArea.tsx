@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { Pencil, Plus, Trash2, Search, Map, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Pencil,
+  Plus,
+  Trash2,
+  Search,
+  Map,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import AdminAreaModel from "./AdminAreaModel";
 import DeleteModal from "../../../component/common/DeleteModel";
 import LoadingOverlay from "../../../component/others/LoadingOverlay";
@@ -27,11 +35,20 @@ const AdminArea = () => {
 
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+
   // ---------------- FETCH AREAS ----------------
   const fetchAreas = async () => {
     try {
       setLoading(true);
-      const res = await getAreasPaginatedAPI(page, limit, searchTerm);
+      const res = await getAreasPaginatedAPI(
+        page,
+        limit,
+        searchTerm,
+        sortBy,
+        order,
+      );
       setAreaList(res.data);
       setTotalPages(res.pagination.totalPages);
       setTotalRecords(res.pagination.totalRecords);
@@ -44,7 +61,18 @@ const AdminArea = () => {
 
   useEffect(() => {
     fetchAreas();
-  }, [page, limit, searchTerm]);
+  }, [page, limit, searchTerm, sortBy, order]);
+
+  const handleSort = (field: string) => {
+    setPage(1);
+
+    if (sortBy === field) {
+      setOrder(order === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setOrder("asc");
+    }
+  };
 
   // ---------------- DELETE ----------------
   const handleDelete = async () => {
@@ -97,8 +125,8 @@ const AdminArea = () => {
             <div className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm text-slate-600 shadow-sm">
               <Map size={13} className="text-[var(--primary-color)]" />
               <span>
-                <strong className="text-slate-800">{totalRecords}</strong>{" "}
-                total areas (நகர் எண்ணிகை)
+                <strong className="text-slate-800">{totalRecords}</strong> total
+                areas (நகர் எண்ணிகை)
               </span>
             </div>
             {searchTerm && (
@@ -155,10 +183,30 @@ const AdminArea = () => {
                       Category (உள்ளாட்சி அமைப்பு)
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80">
-                      Part No (பாகம் எண்)
+                      <div
+                        onClick={() => handleSort("partName")}
+                        className="flex items-center gap-1 cursor-pointer"
+                      >
+                        Part No (பாகம் எண்)
+                        {sortBy === "partName"
+                          ? order === "asc"
+                            ? "🔼"
+                            : "🔽"
+                          : " ⇅"}
+                      </div>
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80">
-                      Ward No (வார்டு எண்)
+                      <div
+                        onClick={() => handleSort("wardNo")}
+                        className="flex items-center gap-1 cursor-pointer"
+                      >
+                        Ward No (வார்டு எண்)
+                        {sortBy === "wardNo"
+                          ? order === "asc"
+                            ? "🔼"
+                            : "🔽"
+                          : " ⇅"}
+                      </div>
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80">
                       Area (நகர்)
@@ -209,7 +257,9 @@ const AdminArea = () => {
                             {area.category.name}
                           </span>
                         ) : (
-                          <span className="text-slate-300 italic text-sm">—</span>
+                          <span className="text-slate-300 italic text-sm">
+                            —
+                          </span>
                         )}
                       </td>
 
@@ -219,7 +269,9 @@ const AdminArea = () => {
                             {area.part.name}
                           </span>
                         ) : (
-                          <span className="text-slate-300 italic text-sm">—</span>
+                          <span className="text-slate-300 italic text-sm">
+                            —
+                          </span>
                         )}
                       </td>
 
@@ -229,7 +281,9 @@ const AdminArea = () => {
                             {area.ward.wardNo}
                           </span>
                         ) : (
-                          <span className="text-slate-300 italic text-sm">—</span>
+                          <span className="text-slate-300 italic text-sm">
+                            —
+                          </span>
                         )}
                       </td>
 
@@ -276,7 +330,8 @@ const AdminArea = () => {
               {/* Total + Rows per page */}
               <div className="flex items-center gap-4">
                 <p className="text-xs text-slate-500">
-                  <strong className="text-slate-700">{totalRecords}</strong> total records
+                  <strong className="text-slate-700">{totalRecords}</strong>{" "}
+                  total records
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-500">Rows:</span>

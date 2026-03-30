@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { Pencil, Plus, Trash2, Search, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Pencil,
+  Plus,
+  Trash2,
+  Search,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 import AdminWardModel from "./AdminWardModel";
 import DeleteModal from "../../../component/common/DeleteModel";
@@ -32,12 +40,15 @@ const AdminWard = () => {
 
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+
   // ---------------- FETCH WARDS ----------------
   const fetchWards = async () => {
     try {
       setLoading(true);
 
-      const res = await getWardsAPI(page, limit, searchTerm);
+      const res = await getWardsAPI(page, limit, searchTerm, sortBy, order);
 
       setWards(res.data);
       setTotalPages(res.pagination.totalPages);
@@ -51,7 +62,18 @@ const AdminWard = () => {
 
   useEffect(() => {
     fetchWards();
-  }, [page, searchTerm, limit]);
+  }, [page, searchTerm, limit, sortBy, order]);
+
+  const handleSort = (field: string) => {
+    setPage(1);
+
+    if (sortBy === field) {
+      setOrder(order === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setOrder("asc");
+    }
+  };
 
   // ---------------- DELETE ----------------
   const handleDelete = async () => {
@@ -105,8 +127,8 @@ const AdminWard = () => {
             <div className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm text-slate-600 shadow-sm">
               <MapPin size={13} className="text-[var(--primary-color)]" />
               <span>
-                <strong className="text-slate-800">{totalRecords}</strong>{" "}
-                total wards (வார்டு எண்ணிகை)
+                <strong className="text-slate-800">{totalRecords}</strong> total
+                wards (வார்டு எண்ணிகை)
               </span>
             </div>
             {searchTerm && (
@@ -163,10 +185,30 @@ const AdminWard = () => {
                       Category (உள்ளாட்சி அமைப்பு)
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80">
-                      Part No (பாகம் எண்)
+                      <div
+                        onClick={() => handleSort("partName")}
+                        className="flex items-center gap-1 cursor-pointer"
+                      >
+                        Part No (பாகம் எண்)
+                        {sortBy === "partName"
+                          ? order === "asc"
+                            ? "🔼"
+                            : "🔽"
+                          : " ⇅"}
+                      </div>
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80">
-                      Ward No (வார்டு எண்)
+                      <div
+                        onClick={() => handleSort("wardNo")}
+                        className="flex items-center gap-1 cursor-pointer"
+                      >
+                        Ward No (வார்டு எண்)
+                        {sortBy === "wardNo"
+                          ? order === "asc"
+                            ? "🔼"
+                            : "🔽"
+                          : " ⇅"}
+                      </div>
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-white/80 hidden">
                       Description
@@ -217,7 +259,9 @@ const AdminWard = () => {
                             {ward.category.name}
                           </span>
                         ) : (
-                          <span className="text-slate-300 italic text-sm">—</span>
+                          <span className="text-slate-300 italic text-sm">
+                            —
+                          </span>
                         )}
                       </td>
 
@@ -227,7 +271,9 @@ const AdminWard = () => {
                             {ward.part.name}
                           </span>
                         ) : (
-                          <span className="text-slate-300 italic text-sm">—</span>
+                          <span className="text-slate-300 italic text-sm">
+                            —
+                          </span>
                         )}
                       </td>
 
@@ -241,7 +287,9 @@ const AdminWard = () => {
 
                       <td className="px-6 py-4 text-slate-600 hidden">
                         {ward.description || (
-                          <span className="text-slate-300 italic">No description</span>
+                          <span className="text-slate-300 italic">
+                            No description
+                          </span>
                         )}
                       </td>
 
@@ -282,7 +330,8 @@ const AdminWard = () => {
               {/* Total + Rows per page */}
               <div className="flex items-center gap-4">
                 <p className="text-xs text-slate-500">
-                  <strong className="text-slate-700">{totalRecords}</strong> total records
+                  <strong className="text-slate-700">{totalRecords}</strong>{" "}
+                  total records
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-slate-500">Rows:</span>

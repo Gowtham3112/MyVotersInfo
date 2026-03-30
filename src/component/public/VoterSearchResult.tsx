@@ -1171,6 +1171,7 @@ const VoterSearchResult: React.FC<Props> = ({
                   "Part No (பாகம் எண்)",
                   "Ward No (வார்டு எண்)",
                   "Area (பகுதி)",
+                  "Address (முகவரி)",
                   "Phone (தொலைபேசி)",
                   "Aadhar No (ஆதார் எண்)",
                   "Voter ID (வாக்காளர் அட்டை)",
@@ -1181,7 +1182,6 @@ const VoterSearchResult: React.FC<Props> = ({
                   "Occupation (வேலை)",
                   "Scheme (அரசு திட்டம்)",
                   "Party (கட்சி)",
-                  "Address (முகவரி)",
                 ].map((col) => (
                   <th
                     key={col}
@@ -1242,6 +1242,13 @@ const VoterSearchResult: React.FC<Props> = ({
                     {v.area?.name}
                   </td>
 
+                   <td
+                    className="px-4 py-3 text-gray-500 max-w-[180px]"
+                    title={v.address}
+                  >
+                    {v.address}
+                  </td>
+
                   <td className="px-4 py-3 text-gray-600 font-mono text-xs whitespace-nowrap">
                     {v.phone}
                   </td>
@@ -1282,13 +1289,6 @@ const VoterSearchResult: React.FC<Props> = ({
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 text-xs font-semibold border border-violet-100 whitespace-nowrap">
                       {v.party}
                     </span>
-                  </td>
-
-                  <td
-                    className="px-4 py-3 text-gray-500 max-w-[180px]"
-                    title={v.address}
-                  >
-                    {v.address}
                   </td>
                 </tr>
               ))}

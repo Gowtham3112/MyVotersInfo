@@ -14,10 +14,16 @@ export const getVotersPaginatedAPI = async (
   page: number = 1,
   limit: number = 10,
   search: string = "",
+  sortPart?: string,
+  sortWard?: string,
 ): Promise<VoterPaginationResponse> => {
+  const query = `?page=${page}&limit=${limit}&search=${encodeURIComponent(
+    search,
+  )}&sortPart=${sortPart || ""}&sortWard=${sortWard || ""}`;
+
   return await apiCall<VoterPaginationResponse>(
     "get",
-    `/voters/paginated?page=${page}&limit=${limit}&search=${search}`,
+    `/voters/paginated${query}`,
   );
 };
 
@@ -55,8 +61,12 @@ export const exportVotersExcelAPI = async (
   page: number,
   limit: number,
   search: string,
+  sortPart?: string,
+  sortWard?: string,
 ): Promise<Blob> => {
-  const query = `?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+  const query = `?page=${page}&limit=${limit}&search=${encodeURIComponent(
+    search,
+  )}&sortPart=${sortPart || ""}&sortWard=${sortWard || ""}`;
 
   return await apiCall<Blob>("get", `/voters/export/excel${query}`, undefined, {
     responseType: "blob",
@@ -66,13 +76,13 @@ export const exportVotersExcelAPI = async (
 export const exportVotersPDFAPI = async (
   page: number,
   limit: number,
-  search: string
+  search: string,
 ) => {
   const res = await axios.get(
     `/api/voters/export/pdf?page=${page}&limit=${limit}&search=${search}`,
     {
       responseType: "blob",
-    }
+    },
   );
 
   return res.data;
