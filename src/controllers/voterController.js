@@ -201,13 +201,20 @@ const getAllVoters = async (req, res) => {
 
 const getVotersPaginated = async (req, res) => {
   try {
-    let { page = 1, limit = 10, search = "" } = req.query;
+    let {
+      page = 1,
+      limit = 10,
+      search = "",
+      sortPart = "",
+      sortWard = "",
+    } = req.query;
 
     page = Number(page);
     limit = Number(limit);
 
     const skip = (page - 1) * limit;
 
+    // 🔍 SEARCH
     const whereCondition = search
       ? {
           OR: [
@@ -224,30 +231,33 @@ const getVotersPaginated = async (req, res) => {
             { occupation: { contains: search } },
             { govtScheme: { contains: search } },
             { party: { contains: search } },
-
-            {
-              category: {
-                name: { contains: search },
-              },
-            },
-            {
-              part: {
-                name: { contains: search },
-              },
-            },
-            {
-              ward: {
-                wardNo: { contains: search },
-              },
-            },
-            {
-              area: {
-                name: { contains: search },
-              },
-            },
+            { category: { name: { contains: search } } },
+            { part: { name: { contains: search } } },
+            { ward: { wardNo: { contains: search } } },
+            { area: { name: { contains: search } } },
           ],
         }
       : {};
+
+    // 🔽 SORTING
+    const orderBy = [];
+
+    if (sortPart) {
+      orderBy.push({
+        part: { name: sortPart === "desc" ? "desc" : "asc" },
+      });
+    }
+
+    if (sortWard) {
+      orderBy.push({
+        ward: { wardNo: sortWard === "desc" ? "desc" : "asc" },
+      });
+    }
+
+    // fallback
+    if (orderBy.length === 0) {
+      orderBy.push({ createdAt: "desc" });
+    }
 
     const [voters, total] = await Promise.all([
       prisma.voter.findMany({
@@ -260,12 +270,10 @@ const getVotersPaginated = async (req, res) => {
         },
         skip,
         take: limit,
-        orderBy: { createdAt: "desc" },
+        orderBy,
       }),
 
-      prisma.voter.count({
-        where: whereCondition,
-      }),
+      prisma.voter.count({ where: whereCondition }),
     ]);
 
     res.json({
@@ -284,12 +292,17 @@ const getVotersPaginated = async (req, res) => {
     });
   }
 };
-
 // ---------------- EXPORT EXCEL ----------------
 
 const exportVotersExcel = async (req, res) => {
   try {
-    let { page = 1, limit = 10, search = "" } = req.query;
+    let {
+      page = 1,
+      limit = 10,
+      search = "",
+      sortPart = "",
+      sortWard = "",
+    } = req.query;
 
     page = Number(page);
     limit = Number(limit);
@@ -320,6 +333,32 @@ const exportVotersExcel = async (req, res) => {
         }
       : {};
 
+    // ✅ ONLY ADDED THIS BLOCK
+    const orderBy = [];
+
+    if (sortPart) {
+      orderBy.push({
+        part: { name: sortPart === "desc" ? "desc" : "asc" },
+      });
+    }
+
+    if (sortWard) {
+      orderBy.push({
+        ward: { wardNo: sortWard === "desc" ? "desc" : "asc" },
+      });
+    }
+
+    // fallback (your original sorting)
+    if (orderBy.length === 0) {
+      orderBy.push(
+        { part: { name: "asc" } },
+        { ward: { wardNo: "asc" } },
+        { area: { name: "asc" } },
+        { rollNo: "asc" },
+      );
+    }
+    // ✅ END
+
     const voters = await prisma.voter.findMany({
       where: whereCondition,
       include: {
@@ -330,12 +369,7 @@ const exportVotersExcel = async (req, res) => {
       },
       skip,
       take: limit,
-      orderBy: [
-        { part: { name: "asc" } },
-        { ward: { wardNo: "asc" } },
-        { area: { name: "asc" } },
-        { rollNo: "asc" },
-      ],
+      orderBy, // ✅ replaced here
     });
 
     const workbook = new ExcelJS.Workbook();
@@ -367,14 +401,12 @@ const exportVotersExcel = async (req, res) => {
       { header: "Party (கட்சி)", key: "party" },
     ];
 
-    // Auto column width based on header
     sheet.columns.forEach((column) => {
       const headerLength = column.header.length;
       column.width = headerLength + 5;
       if (column.width < 12) column.width = 12;
     });
 
-    // Header Styling
     const headerRow = sheet.getRow(1);
 
     headerRow.eachCell((cell) => {
@@ -485,6 +517,7 @@ const exportVotersExcel = async (req, res) => {
     });
   }
 };
+
 const exportVoterListPDF = async (req, res) => {
   try {
     const voters = await prisma.voter.findMany({

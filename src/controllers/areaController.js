@@ -10,16 +10,26 @@ const getAllAreas = async (req, res) => {
     });
     res.status(200).json(areas);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch areas", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch areas", error: error.message });
   }
 };
 
 // ---------------- GET AREAS WITH PAGINATION ----------------
 const getAreasPaginated = async (req, res) => {
   try {
-    let { page = 1, limit = 10, search = "" } = req.query;
+    let {
+      page = 1,
+      limit = 10,
+      search = "",
+      sortBy = "createdAt",
+      order = "desc",
+    } = req.query;
+
     page = Number(page);
     limit = Number(limit);
+
     const skip = (page - 1) * limit;
 
     const whereCondition = search
@@ -34,11 +44,22 @@ const getAreasPaginated = async (req, res) => {
         }
       : {};
 
+    // 🔥 Handle relation sorting
+    let orderBy = {};
+
+    if (sortBy === "partName") {
+      orderBy = { part: { name: order } };
+    } else if (sortBy === "wardNo") {
+      orderBy = { ward: { wardNo: order } };
+    } else {
+      orderBy = { [sortBy]: order };
+    }
+
     const [areas, total] = await Promise.all([
       prisma.area.findMany({
         where: whereCondition,
         include: { category: true, part: true, ward: true },
-        orderBy: { createdAt: "desc" },
+        orderBy,
         skip,
         take: limit,
       }),
@@ -47,10 +68,18 @@ const getAreasPaginated = async (req, res) => {
 
     res.status(200).json({
       data: areas,
-      pagination: { totalRecords: total, page, limit, totalPages: Math.ceil(total / limit) },
+      pagination: {
+        totalRecords: total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch areas", error: error.message });
+    res.status(500).json({
+      message: "Failed to fetch areas",
+      error: error.message,
+    });
   }
 };
 
@@ -71,7 +100,9 @@ const getAreasByFilters = async (req, res) => {
 
     res.status(200).json(areas);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch areas", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch areas", error: error.message });
   }
 };
 
@@ -85,7 +116,8 @@ const createArea = async (req, res) => {
     }
 
     const existingArea = await prisma.area.findFirst({ where: { name } });
-    if (existingArea) return res.status(400).json({ message: "Area name already exists" });
+    if (existingArea)
+      return res.status(400).json({ message: "Area name already exists" });
 
     const area = await prisma.area.create({
       data: { name, description, categoryId, partId, wardId },
@@ -94,7 +126,9 @@ const createArea = async (req, res) => {
 
     res.status(201).json({ message: "Area created successfully", area });
   } catch (error) {
-    res.status(500).json({ message: "Failed to create area", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to create area", error: error.message });
   }
 };
 
@@ -107,7 +141,8 @@ const updateArea = async (req, res) => {
     const existingArea = await prisma.area.findFirst({
       where: { name, NOT: { id: Number(id) } },
     });
-    if (existingArea) return res.status(400).json({ message: "Area name already exists" });
+    if (existingArea)
+      return res.status(400).json({ message: "Area name already exists" });
 
     const area = await prisma.area.update({
       where: { id: Number(id) },
@@ -117,7 +152,9 @@ const updateArea = async (req, res) => {
 
     res.status(200).json({ message: "Area updated successfully", area });
   } catch (error) {
-    res.status(500).json({ message: "Failed to update area", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to update area", error: error.message });
   }
 };
 
@@ -128,7 +165,9 @@ const deleteArea = async (req, res) => {
     await prisma.area.delete({ where: { id: Number(id) } });
     res.status(200).json({ message: "Area deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete area", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to delete area", error: error.message });
   }
 };
 

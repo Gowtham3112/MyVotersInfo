@@ -26,7 +26,13 @@ const getAllWards = async (req, res) => {
 // ---------------- GET WARDS PAGINATION ----------------
 const getWards = async (req, res) => {
   try {
-    let { page = 1, limit = 10, search = "" } = req.query;
+    let {
+      page = 1,
+      limit = 10,
+      search = "",
+      sortBy = "createdAt",
+      order = "desc",
+    } = req.query;
 
     page = Number(page);
     limit = Number(limit);
@@ -36,33 +42,18 @@ const getWards = async (req, res) => {
     const whereCondition = search
       ? {
           OR: [
-            {
-              wardNo: {
-                contains: search,
-              },
-            },
-            {
-              description: {
-                contains: search,
-              },
-            },
-            {
-              category: {
-                name: {
-                  contains: search,
-                },
-              },
-            },
-            {
-              part: {
-                name: {
-                  contains: search,
-                },
-              },
-            },
+            { wardNo: { contains: search } },
+            { description: { contains: search } },
+            { category: { name: { contains: search } } },
+            { part: { name: { contains: search } } },
           ],
         }
       : {};
+
+    const orderBy =
+      sortBy === "partName"
+        ? { part: { name: order } } // 🔥 relation sorting
+        : { [sortBy]: order };
 
     const [wards, total] = await Promise.all([
       prisma.ward.findMany({
@@ -71,16 +62,11 @@ const getWards = async (req, res) => {
           category: true,
           part: true,
         },
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy,
         skip,
         take: limit,
       }),
-
-      prisma.ward.count({
-        where: whereCondition,
-      }),
+      prisma.ward.count({ where: whereCondition }),
     ]);
 
     res.status(200).json({

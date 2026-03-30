@@ -25,7 +25,7 @@ const getAllParts = async (req, res) => {
 // ---------------- GET PARTS (PAGINATION + SEARCH) ----------------
 const getParts = async (req, res) => {
   try {
-    let { page = 1, limit = 10, search = "" } = req.query;
+    let { page = 1, limit = 10, search = "", sortBy = "createdAt", order = "desc" } = req.query;
 
     page = Number(page);
     limit = Number(limit);
@@ -35,21 +35,11 @@ const getParts = async (req, res) => {
     const whereCondition = search
       ? {
           OR: [
-            {
-              name: {
-                contains: search,
-              },
-            },
-            {
-              description: {
-                contains: search,
-              },
-            },
+            { name: { contains: search } },
+            { description: { contains: search } },
             {
               category: {
-                name: {
-                  contains: search,
-                },
+                name: { contains: search },
               },
             },
           ],
@@ -59,19 +49,14 @@ const getParts = async (req, res) => {
     const [parts, total] = await Promise.all([
       prisma.part.findMany({
         where: whereCondition,
-        include: {
-          category: true,
-        },
+        include: { category: true },
         orderBy: {
-          createdAt: "desc",
+          [sortBy]: order, // 🔥 dynamic sorting
         },
         skip,
         take: limit,
       }),
-
-      prisma.part.count({
-        where: whereCondition,
-      }),
+      prisma.part.count({ where: whereCondition }),
     ]);
 
     res.status(200).json({
