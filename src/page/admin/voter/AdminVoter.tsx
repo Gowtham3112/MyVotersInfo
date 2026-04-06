@@ -562,7 +562,7 @@ const AdminVoter = () => {
               <Users size={13} className="text-[var(--primary-color)]" />
               <span>
                 <strong className="text-slate-800">{totalRecords}</strong> total
-                voters (வாக்காளர் எண்ணிகை)
+                voters (வாக்காளர் எண்ணிக்கை)
               </span>
             </div>
             {searchTerm && (

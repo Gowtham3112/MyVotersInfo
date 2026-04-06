@@ -88,7 +88,7 @@ const AdminCategory = () => {
               <Tag size={13} className="text-[var(--primary-color)]" />
               <span>
                 <strong className="text-slate-800">{categoryList.length}</strong>{" "}
-                total categories (உள்ளாட்சி அமைப்பு எண்ணிகை)
+                total categories (உள்ளாட்சி அமைப்பு எண்ணிக்கை)
               </span>
             </div>
             {searchTerm && (

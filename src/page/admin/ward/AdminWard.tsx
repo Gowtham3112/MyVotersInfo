@@ -128,7 +128,7 @@ const AdminWard = () => {
               <MapPin size={13} className="text-[var(--primary-color)]" />
               <span>
                 <strong className="text-slate-800">{totalRecords}</strong> total
-                wards (வார்டு எண்ணிகை)
+                wards (வார்டு எண்ணிக்கை)
               </span>
             </div>
             {searchTerm && (

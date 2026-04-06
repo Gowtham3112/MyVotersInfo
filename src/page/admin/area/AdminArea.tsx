@@ -126,7 +126,7 @@ const AdminArea = () => {
               <Map size={13} className="text-[var(--primary-color)]" />
               <span>
                 <strong className="text-slate-800">{totalRecords}</strong> total
-                areas (நகர் எண்ணிகை)
+                areas (நகர் எண்ணிக்கை)
               </span>
             </div>
             {searchTerm && (
